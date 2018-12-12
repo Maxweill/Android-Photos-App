@@ -1,52 +1,116 @@
 package com.example.clifford.myapplication;
 
-import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    Account account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+        try {
+            // must populate the hashset
+            File homedir = getFilesDir();
+            File file = new File(homedir.getPath()+ "/SAVE.DAT");
+
+            if (file.exists()) {
+                System.out.println("It Exists!");
+                FileInputStream filei = new FileInputStream(file);
+                ObjectInputStream obji = new ObjectInputStream(filei);
+                account = (Account) obji.readObject();
+
+            } else {
+                System.out.println("It Doesnt Exist!");
+                account = new Account("stock");
             }
-        });
-    }
+        }
+        catch (Exception e){
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+            e.printStackTrace();
         }
 
-        return super.onOptionsItemSelected(item);
+        String [] names = new String[account.albums.size()];
+        int i = 0;
+        for ( Album a: account.albums ) {
+            names[i] = a.getName();
+            i++;
+        }
+
+        //get button
+
+        Button albButton = (Button)findViewById(R.id.openAlb);
+
+        ListAdapter cliffAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
+        final ListView cliffList = (ListView)findViewById(R.id.cliffList);
+        cliffList.setAdapter(cliffAdapter);
+
+        albButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick ( View view ){
+
+                String item = (String)cliffList.getSelectedItem();
+
+            }
+        });
+
     }
+
+
+
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        try {
+            serialize();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    void serialize()
+    {
+        try {
+            File homedir = getFilesDir();
+            File file = new File(homedir.getPath()+ "/SAVE.DAT");
+            //System.out.println(file.getAbsoluteFile());
+            file.delete();
+            file.createNewFile();
+
+            FileOutputStream fileo = new FileOutputStream(file);
+            ObjectOutputStream objo = new ObjectOutputStream(fileo);
+            objo.writeObject(account);
+            fileo.close();
+            objo.close();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+
 }
