@@ -1,6 +1,7 @@
 package com.example.clifford.myapplication;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,13 +13,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -162,20 +167,60 @@ public class SearchView extends AppCompatActivity {
 
 
 
-                        List<Photo> searchresults = globalVariable.getAccount().search(tag1, val1, tag2, val2, type);
+                        final List<Photo> searchresults = globalVariable.getAccount().search(tag1, val1, tag2, val2, type);
 
-                        /****************************************/
+                                /****************************************/
 
 
-                            ListView myList = (ListView)findViewById(R.id.results);
+                                ListView myList = (ListView)findViewById(R.id.results);
 
-                            String [] names = new String[searchresults.size()];
-                            int i = 0;
-                            for ( Photo p: searchresults ){
-                                names[i] = p.location;
-                                i++;
+                                final String [] names = new String[searchresults.size()];
+                                int i = 0;
+                                for ( Photo p: searchresults ){
+                                    names[i] = p.location;
+                                    i++;
+                                }
+
+
+                                class CustomAdapter extends BaseAdapter {
+
+
+                                    @Override
+                                    public int getCount() {
+                                        return names.length;
+                                    }
+
+                                    @Override
+                                    public Object getItem(int position) {
+                                        return null;
+                                    }
+
+                                    @Override
+                                    public long getItemId(int position) {
+                                        return 0;
+                                    }
+
+                                    @Override
+                                    public View getView(int position, View convertView, ViewGroup parent) {
+
+                                        convertView = getLayoutInflater().inflate(R.layout.customlayout,null);
+                                        ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
+                                        TextView textView = (TextView)convertView.findViewById(R.id.text);
+
+                                        Photo p = searchresults.get(position);
+                                        p.bmap = BitmapFactory.decodeByteArray(p.bytemap, 0, p.bytemap.length);
+
+                                imageView.setImageBitmap(p.bmap);
+                                textView.setText(names[position]);
+
+                                return convertView;
                             }
-                            ListAdapter adapter = new ArrayAdapter<String>(SearchView.this, android.R.layout.simple_expandable_list_item_1, names);
+
+
+                        }
+
+
+                            CustomAdapter adapter = new CustomAdapter();
                             myList.setAdapter(adapter);
                     }
                 })

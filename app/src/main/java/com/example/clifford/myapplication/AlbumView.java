@@ -4,19 +4,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.provider.MediaStore;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -40,21 +45,55 @@ public class AlbumView extends AppCompatActivity {
         setContentView(R.layout.activity_album_view);
         System.out.println(a.name);
 
-        ListView myList = (ListView)findViewById(R.id.pictureview);
+        final ListView myList = (ListView)findViewById(R.id.pictureview);
 
-        String [] names = new String[a.photos.size()];
+        final String [] names = new String[a.photos.size()];
         int i = 0;
         for ( Photo p: a.photos ){
             names[i] = p.location;
             i++;
         }
-        ListAdapter adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, names);
-        myList.setAdapter(adapter);
 
 
+       class CustomAdapter extends BaseAdapter{
 
 
+           @Override
+           public int getCount() {
+               return names.length;
+           }
 
+           @Override
+           public Object getItem(int position) {
+               return null;
+           }
+
+           @Override
+           public long getItemId(int position) {
+               return 0;
+           }
+
+           @Override
+           public View getView(int position, View convertView, ViewGroup parent) {
+
+               convertView = getLayoutInflater().inflate(R.layout.customlayout,null);
+               ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
+               TextView textView = (TextView)convertView.findViewById(R.id.text);
+
+               Photo p = globalVariable.getAlbum().photos.get(position);
+               p.bmap = BitmapFactory.decodeByteArray(p.bytemap, 0, p.bytemap.length);
+
+               imageView.setImageBitmap(p.bmap);
+               textView.setText(names[position]);
+
+               return convertView;
+           }
+
+
+       }
+
+       CustomAdapter customAdapter = new CustomAdapter();
+        myList.setAdapter(customAdapter);
 
         myList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -114,7 +153,9 @@ public class AlbumView extends AppCompatActivity {
         display.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Intent intent = new Intent(AlbumView.this, PhotoView.class);
+                intent.putExtra("index",a.photos.indexOf(photo));
+                startActivity(intent);
             }
         });
 
@@ -148,7 +189,7 @@ public class AlbumView extends AppCompatActivity {
 
                 // maxView.setImageBitmap(bitmap);
                 /************/
-                String [] names = new String[a.photos.size()];
+                final String [] names = new String[a.photos.size()];
 
                 ListView myList = (ListView)findViewById(R.id.pictureview);
                 int i = 0;
@@ -156,7 +197,44 @@ public class AlbumView extends AppCompatActivity {
                     names[i] = ph.location;
                     i++;
                 }
-                ListAdapter adapter = new ArrayAdapter<String>(AlbumView.this, android.R.layout.simple_expandable_list_item_1, names);
+
+                class CustomAdapter extends BaseAdapter{
+
+
+                    @Override
+                    public int getCount() {
+                        return names.length;
+                    }
+
+                    @Override
+                    public Object getItem(int position) {
+                        return null;
+                    }
+
+                    @Override
+                    public long getItemId(int position) {
+                        return 0;
+                    }
+
+                    @Override
+                    public View getView(int position, View convertView, ViewGroup parent) {
+
+                        convertView = getLayoutInflater().inflate(R.layout.customlayout,null);
+                        ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
+                        TextView textView = (TextView)convertView.findViewById(R.id.text);
+
+                        Photo p = globalVariable.getAlbum().photos.get(position);
+                        p.bmap = BitmapFactory.decodeByteArray(p.bytemap, 0, p.bytemap.length);
+
+                        imageView.setImageBitmap(p.bmap);
+                        textView.setText(names[position]);
+
+                        return convertView;
+                    }
+
+
+                }
+                CustomAdapter adapter = new CustomAdapter();
                 myList.setAdapter(adapter);
 
                 /**************************/
@@ -178,7 +256,7 @@ public class AlbumView extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         globalVariable.getAccount().removePhotoFromAlbum(globalVariable.getAlbum(),del);
                         /************/
-                            String [] names = new String[a.photos.size()];
+                            final String [] names = new String[a.photos.size()];
 
                             ListView myList = (ListView)findViewById(R.id.pictureview);
                             int i = 0;
@@ -186,8 +264,47 @@ public class AlbumView extends AppCompatActivity {
                                 names[i] = p.location;
                                 i++;
                             }
-                            ListAdapter adapter = new ArrayAdapter<String>(AlbumView.this, android.R.layout.simple_expandable_list_item_1, names);
-                            myList.setAdapter(adapter);
+
+                        class CustomAdapter extends BaseAdapter{
+
+
+                            @Override
+                            public int getCount() {
+                                return names.length;
+                            }
+
+                            @Override
+                            public Object getItem(int position) {
+                                return null;
+                            }
+
+                            @Override
+                            public long getItemId(int position) {
+                                return 0;
+                            }
+
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+
+                                convertView = getLayoutInflater().inflate(R.layout.customlayout,null);
+                                ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
+                                TextView textView = (TextView)convertView.findViewById(R.id.text);
+
+                                Photo p = globalVariable.getAlbum().photos.get(position);
+                                p.bmap = BitmapFactory.decodeByteArray(p.bytemap, 0, p.bytemap.length);
+
+                                imageView.setImageBitmap(p.bmap);
+                                textView.setText(names[position]);
+
+                                return convertView;
+                            }
+
+
+                        }
+
+                        CustomAdapter adapter = new CustomAdapter();
+                        myList.setAdapter(adapter);
+
 
                         /**************************/
                     }
@@ -221,7 +338,7 @@ public class AlbumView extends AppCompatActivity {
                             Toast.makeText(AlbumView.this, "No such album exists. Please note albums are CASE SENSITIVE.", Toast.LENGTH_SHORT).show();
                         }
                         /************/
-                        String [] names = new String[a.photos.size()];
+                        final String [] names = new String[a.photos.size()];
 
                         ListView myList = (ListView)findViewById(R.id.pictureview);
                         int i = 0;
@@ -229,10 +346,48 @@ public class AlbumView extends AppCompatActivity {
                             names[i] = p.location;
                             i++;
                         }
-                        ListAdapter adapter = new ArrayAdapter<String>(AlbumView.this, android.R.layout.simple_expandable_list_item_1, names);
+
+                        class CustomAdapter extends BaseAdapter{
+
+
+                            @Override
+                            public int getCount() {
+                                return names.length;
+                            }
+
+                            @Override
+                            public Object getItem(int position) {
+                                return null;
+                            }
+
+                            @Override
+                            public long getItemId(int position) {
+                                return 0;
+                            }
+
+                            @Override
+                            public View getView(int position, View convertView, ViewGroup parent) {
+
+                                convertView = getLayoutInflater().inflate(R.layout.customlayout,null);
+                                ImageView imageView = (ImageView)convertView.findViewById(R.id.imageView);
+                                TextView textView = (TextView)convertView.findViewById(R.id.text);
+
+                                Photo p = globalVariable.getAlbum().photos.get(position);
+                                p.bmap = BitmapFactory.decodeByteArray(p.bytemap, 0, p.bytemap.length);
+
+                                imageView.setImageBitmap(p.bmap);
+                                textView.setText(names[position]);
+
+                                return convertView;
+                            }
+
+
+                        }
+
+                        CustomAdapter adapter = new CustomAdapter();
                         myList.setAdapter(adapter);
 
-                        /**************************/
+
                     }
                 })
                 .setNegativeButton("Cancel", null)
