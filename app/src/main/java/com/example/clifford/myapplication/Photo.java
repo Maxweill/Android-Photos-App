@@ -1,4 +1,7 @@
-package Model;
+package com.example.clifford.myapplication;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+
 import java.util.*;
 import java.io.*;
 
@@ -11,9 +14,10 @@ public class Photo implements Serializable{
     Date date;
     List<Tag> tags;
     String location;
+    transient Bitmap bmap;
     String caption;
     HashSet<String> tagtypes;
-
+    byte[] bytemap;
     /**
      * Photo constructor, takes in a filepath
      * @param location

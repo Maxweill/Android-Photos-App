@@ -1,4 +1,4 @@
-package Model;
+package com.example.clifford.myapplication;
 import java.util.*;
 import java.io.*;
 
@@ -147,6 +147,7 @@ public class Account implements Serializable {
         Photo p = new Photo(location);
         if (album.addPhoto(p)) {
             masterphotolist.put(location, p);
+            System.out.println("Successfully added stock photo:"+location);
             return true;
         }
         return false;

@@ -1,4 +1,4 @@
-package Model;
+package com.example.clifford.myapplication;
 import java.util.*;
 import java.io.*;
 
@@ -117,6 +117,7 @@ public class Album implements Serializable{
         }
         Photo temp = move;
         //System.out.println(photos.remove(move));
+        photos.remove(move);
         photolocations.remove(move.location);
 
         destination.photos.add(move);
